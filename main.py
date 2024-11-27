@@ -12,6 +12,8 @@ win = tk.Tk()
 donnees=tk.Frame(win, width=1182, height=40, bg='gray')
 canevas=tk.Canvas(win, width=982, height=737, bg='white')
 panneau=tk.Frame(win, width=200, height=737, bg='gray')
+panneau.pack_propagate(False)
+
 
 
 taillecase = 35
@@ -54,6 +56,38 @@ def on_click(event):
     player="lime"
     squareData=tk.Label(panneau, text='Case '+str(i)+', '+str(j), bg='gray')
     squareData.pack(side="top")
+    showCaptureButton(i,j,player)
+    
+        
+    
+def outlineontop():
+    for i in carte:
+        if 'captured' in canevas.gettags(i):
+            canevas.tag_raise(i)
+        
+def capture(i,j,player):
+    coul = canevas.itemcget(carte[i][j], 'fill')
+    if 'captured' in canevas.gettags(carte[i][j]):
+        return
+    color = tuple((c//256 for c in win.winfo_rgb(coul)))
+    playcolor = tuple((c//256 for c in win.winfo_rgb(player)))
+    final='#'
+    for val in range(3):
+        aadd=str(hex((color[val]+playcolor[val])//2))[-2:]
+        if aadd.startswith('x'):
+            aadd='0'+aadd[1:]
+        final+=aadd
+    canevas.itemconfig(carte[i][j], fill=final, tags=list(canevas.gettags(carte[i][j]))+['captured', 'capturedby*'+player])
+    updateCapturedOutline(player)
+    
+    
+
+def captureButton(i,j,player):
+    print("ll")
+    bouton=tk.Button(panneau, text="Capture", command=lambda: capture(i,j,player))
+    bouton.pack()
+
+def showCaptureButton(i,j,player):
     if 'captured' not in canevas.gettags(carte[i][j]):
         if j==0 and i==0:
             if 'captured' in canevas.gettags(carte[i+1][j]) or 'captured' in canevas.gettags(carte[i][j+1]):
@@ -76,33 +110,6 @@ def on_click(event):
         else: 
             if 'captured' in canevas.gettags(carte[i+1][j]) or 'captured' in canevas.gettags(carte[i][j+1]) or 'captured' in canevas.gettags(carte[i][j-1]) or 'captured' in canevas.gettags(carte[i-1][j]):
                 captureButton(i,j,player)
-    
-    
-def outlineontop():
-    for i in carte:
-        if 'captured' in canevas.gettags(i):
-            canevas.tag_raise(i)
-        
-def capture(i,j,player):
-    coul = canevas.itemcget(carte[i][j], 'fill')
-    if 'captured' in canevas.gettags(carte[i][j]):
-        return
-    color = tuple((c//256 for c in win.winfo_rgb(coul)))
-    playcolor = tuple((c//256 for c in win.winfo_rgb(player)))
-    final='#'
-    for val in range(3):
-        aadd=str(hex((color[val]+playcolor[val])//2))[-2:]
-        if aadd.startswith('x'):
-            aadd='0'+aadd[1:]
-        final+=aadd
-    canevas.itemconfig(carte[i][j], fill=final, outline='lime', tags=list(canevas.gettags(carte[i][j]))+['captured', 'capturedby*'+player])
-    updateCapturedOutline(player)
-    
-
-def captureButton(i,j,player):
-    print("lol")
-    bouton=tk.Button(panneau, text="Capture", command=lambda: capture(i,j,player))
-    bouton.pack()
 
 
 def updateCapturedOutline(player):
@@ -149,8 +156,9 @@ canevas.bind('<Button-1>', on_click)
 
 capture(10,10,"lime")
 
-donnees.pack(side='top')
-canevas.pack(side='left')
-panneau.pack(side='right')
+donnees.grid(column=0,row=0,columnspan=2)
+canevas.grid(column=0,row=1)
+panneau.grid(column=1,row=1)
+
 win.resizable(False,False)
 win.mainloop()
