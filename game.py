@@ -44,10 +44,11 @@ class Noble(Personne):
         self.terres=terres
 
 class Case():
-    def __init__(self,coords,terrain):
+    def __init__(self,coords,tkItem,terrain):
         self.coords=coords
         self.terrain=terrain
         self.captured=False
+        self.tkItem=tkItem
         self.type=None
     def capture(self):
         self.captured=True

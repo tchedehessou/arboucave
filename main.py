@@ -23,15 +23,18 @@ carte = []
 for i in range(len(perlin_noise)):
     carte.append([])
     for j in range(len(perlin_noise[i])):
+        
         couleur = max(0, min(255, int((perlin_noise[i][j]+0.5)*255)))
         test = canevas.create_rectangle(2+i*taillecase, 2+j*taillecase, 2+i*taillecase+taillecase, 2+j*taillecase+taillecase, fill='gray' if couleur < 32 else 'green' if couleur < 210 else 'blue', outline='black')
+        terrain = 'roche' if couleur < 32 else 'herbe' if couleur < 210 else 'eau'
         if couleur < 32:
             canevas.itemconfig(test, tags=['roche'])
         elif couleur < 210:
             canevas.itemconfig(test, tags=['herbe'])
         else:
             canevas.itemconfig(test, tags=['eau'])
-        carte[i].append(test)
+        tile=game.Case((i,j),test,terrain)
+        carte[i].append(tile)
 
 
 
@@ -62,13 +65,11 @@ def on_click(event):
         
     
 def outlineontop():
-    for i in carte:
-        if 'captured' in canevas.gettags(i):
-            canevas.tag_raise(i)
+    pass
         
 def capture(i,j,player):
-    coul = canevas.itemcget(carte[i][j], 'fill')
-    if 'captured' in canevas.gettags(carte[i][j]):
+    coul = canevas.itemcget(carte[i][j].tkItem, 'fill')
+    if 'captured' in canevas.gettags(carte[i][j].tkItem):
         return
     color = tuple((c//256 for c in win.winfo_rgb(coul)))
     playcolor = tuple((c//256 for c in win.winfo_rgb(player)))
@@ -78,7 +79,7 @@ def capture(i,j,player):
         if aadd.startswith('x'):
             aadd='0'+aadd[1:]
         final+=aadd
-    canevas.itemconfig(carte[i][j], fill=final, tags=list(canevas.gettags(carte[i][j]))+['captured', 'capturedby*'+player])
+    canevas.itemconfig(carte[i][j].tkItem, fill=final, tags=list(canevas.gettags(carte[i][j].tkItem))+['captured', 'capturedby*'+player])
     updateCapturedOutline(player)
     
     
@@ -89,28 +90,28 @@ def captureButton(i,j,player):
     bouton.pack()
 
 def showCaptureButton(i,j,player):
-    if 'captured' not in canevas.gettags(carte[i][j]):
-        if j==0 and i==0:
-            if 'captured' in canevas.gettags(carte[i+1][j]) or 'captured' in canevas.gettags(carte[i][j+1]):
-                captureButton(i,j,player)
-        elif j==0:
-            if 'captured' in canevas.gettags(carte[i][j+1]) or 'captured' in canevas.gettags(carte[i+1][j]) or 'captured' in canevas.gettags(carte[i-1][j]):
-                captureButton(i,j,player)
-        elif i==0:
-            if 'captured' in canevas.gettags(carte[i+1][j]) or 'captured' in canevas.gettags(carte[i][j+1]) or 'captured' in canevas.gettags(carte[i][j-1]):
-                captureButton(i,j,player)
-        elif i==len(carte)-1 and j==len(carte[i])-1:
-            if 'captured' in canevas.gettags(carte[i-1][j]) or 'captured' in canevas.gettags(carte[i][j-1]):
-                captureButton(i,j,player)
-        elif i==len(carte)-1:
-            if 'captured' in canevas.gettags(carte[i-1][j]) or 'captured' in canevas.gettags(carte[i][j+1]) or 'captured' in canevas.gettags(carte[i][j-1]):
-                captureButton(i,j,player)
-        elif j==len(carte[i])-1:
-            if 'captured' in canevas.gettags(carte[i+1][j]) or 'captured' in canevas.gettags(carte[i][j-1]) or 'captured' in canevas.gettags(carte[i-1][j]):
-                captureButton(i,j,player)
-        else: 
-            if 'captured' in canevas.gettags(carte[i+1][j]) or 'captured' in canevas.gettags(carte[i][j+1]) or 'captured' in canevas.gettags(carte[i][j-1]) or 'captured' in canevas.gettags(carte[i-1][j]):
-                captureButton(i,j,player)
+    if 'captured' not in canevas.gettags(carte[i][j].tkItem):
+        if j == 0 and i == 0:
+            if 'captured' in canevas.gettags(carte[i + 1][j].tkItem) or 'captured' in canevas.gettags(carte[i][j + 1].tkItem):
+                captureButton(i, j, player)
+        elif j == 0:
+            if 'captured' in canevas.gettags(carte[i][j + 1].tkItem) or 'captured' in canevas.gettags(carte[i + 1][j].tkItem) or 'captured' in canevas.gettags(carte[i - 1][j].tkItem):
+                captureButton(i, j, player)
+        elif i == 0:
+            if 'captured' in canevas.gettags(carte[i + 1][j].tkItem) or 'captured' in canevas.gettags(carte[i][j + 1].tkItem) or 'captured' in canevas.gettags(carte[i][j - 1].tkItem):
+                captureButton(i, j, player)
+        elif i == len(carte) - 1 and j == len(carte[i]) - 1:
+            if 'captured' in canevas.gettags(carte[i - 1][j].tkItem) or 'captured' in canevas.gettags(carte[i][j - 1].tkItem):
+                captureButton(i, j, player)
+        elif i == len(carte) - 1:
+            if 'captured' in canevas.gettags(carte[i - 1][j].tkItem) or 'captured' in canevas.gettags(carte[i][j + 1].tkItem) or 'captured' in canevas.gettags(carte[i][j - 1].tkItem):
+                captureButton(i, j, player)
+        elif j == len(carte[i]) - 1:
+            if 'captured' in canevas.gettags(carte[i + 1][j].tkItem) or 'captured' in canevas.gettags(carte[i][j - 1].tkItem) or 'captured' in canevas.gettags(carte[i - 1][j].tkItem):
+                captureButton(i, j, player)
+        else:
+            if 'captured' in canevas.gettags(carte[i + 1][j].tkItem) or 'captured' in canevas.gettags(carte[i][j + 1].tkItem) or 'captured' in canevas.gettags(carte[i][j - 1].tkItem) or 'captured' in canevas.gettags(carte[i - 1][j].tkItem):
+                captureButton(i, j, player)
 
 
 def updateCapturedOutline(player):
@@ -118,27 +119,27 @@ def updateCapturedOutline(player):
         canevas.delete(adelete)
     for i in range(len(carte)):
         for j in range(len(carte[i])):
-            if 'captured' in canevas.gettags(carte[i][j]):
-                if 'capturedby*'+player in canevas.gettags(carte[i][j]):
+            if 'captured' in canevas.gettags(carte[i][j].tkItem):
+                if 'capturedby*'+player in canevas.gettags(carte[i][j].tkItem):
                     if i==0:
                         canevas.create_line(i*taillecase+2,j*taillecase+2,i*taillecase+2,(j+1)*taillecase+2, fill=player, width=2, tags=['capturedoutline*'+player])
                     else:
-                        if 'capturedby*'+player not in canevas.gettags(carte[i-1][j]):
+                        if 'capturedby*'+player not in canevas.gettags(carte[i-1][j].tkItem):
                             canevas.create_line(i*taillecase+2,j*taillecase+2,i*taillecase+2,(j+1)*taillecase+2, fill=player, width=2, tags=['capturedoutline*'+player])
                     if j==0:
                         canevas.create_line(i*taillecase+2,j*taillecase+2,(i+1)*taillecase+2,j*taillecase+2, fill=player, width=2, tags=['capturedoutline*'+player])
                     else: 
-                        if 'capturedby*'+player not in canevas.gettags(carte[i][j-1]):
+                        if 'capturedby*'+player not in canevas.gettags(carte[i][j-1].tkItem):
                             canevas.create_line(i*taillecase+2,j*taillecase+2,(i+1)*taillecase+2,j*taillecase+2, fill=player, width=2, tags=['capturedoutline*'+player])
                     if i==len(carte)-1:
                         canevas.create_line((i+1)*taillecase+2,j*taillecase+2,(i+1)*taillecase+2,(j+1)*taillecase+2, fill=player, width=2, tags=['capturedoutline*'+player])
                     else:
-                        if 'capturedby*'+player not in canevas.gettags(carte[i+1][j]):
+                        if 'capturedby*'+player not in canevas.gettags(carte[i+1][j].tkItem):
                             canevas.create_line((i+1)*taillecase+2,j*taillecase+2,(i+1)*taillecase+2,(j+1)*taillecase+2, fill=player, width=2, tags=['capturedoutline*'+player])
                     if j==len(carte[i])-1:
                         canevas.create_line(i*taillecase+2,(j+1)*taillecase+2,(i+1)*taillecase+2,(j+1)*taillecase+2, fill=player, width=2, tags=['capturedoutline*'+player])
                     else:
-                        if 'capturedby*'+player not in canevas.gettags(carte[i][j+1]):
+                        if 'capturedby*'+player not in canevas.gettags(carte[i][j+1].tkItem):
                             canevas.create_line(i*taillecase+2,(j+1)*taillecase+2,(i+1)*taillecase+2,(j+1)*taillecase+2, fill=player, width=2, tags=['capturedoutline*'+player])
 
 
@@ -146,7 +147,7 @@ def updateCapturedOutline(player):
 
 for i in range(len(carte)):
     for j in range(len(carte[i])):
-        item = carte[i][j]
+        item = carte[i][j].tkItem
         canevas.tag_bind(item, '<Enter>', lambda event, item=item: on_enter(event, item))
         canevas.tag_bind(item, '<Leave>', lambda event, item=item: on_leave(event, item))
 
