@@ -1,5 +1,6 @@
 import tkinter as tk
 import perlin
+import game
 
 
 shape = (0.5,0.5)
