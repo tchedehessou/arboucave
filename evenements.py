@@ -1,5 +1,6 @@
 import projet.py
 
+
 l_events =["epidemie","incendies","famine","pillage",
            "rien","récolte","immigration","vassalistaion"]
 
