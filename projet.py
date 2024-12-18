@@ -32,10 +32,13 @@ class Soldat(Personne):
 
 
 class Ecclesiastique(Personne):
-    def __init__(self, nom,ev,age,argent):
+    def __init__(self, nom,ev,age,argent,):
         super().__init__(nom,ev,age)
         self.argent=argent
         self.don=random.choice(["prod","vie","humeur","guerre"])
+
+    def responsable_deglise():
+        pass
 
 
 class Noble(Personne):
@@ -47,20 +50,30 @@ class Noble(Personne):
         self.l_roturiers=l_roturiers
 
     def collecte_impots(self):
-        ## A gérer
-        ## ajouter la collecte d'argent dans le cas où pas de ressources
-        ## si ni ressources ou argent , le roturier meurt
         for roturier in self.l_roturiers :
+            somme_pay = 10
+            somme_art = 5
             if roturier.statut == "paysan" :
-                self.ressoures += ((0.5) * roturier.ressources)
-                roturier.ressources -= ((0.5) * roturier.ressources)
+                if routurier.ressources == 0 :
+                    self.argent += (roturier.argent - somme_pay )
+                    roturier.argent -= somme_pay 
+                elif roturier.argent == 0 :
+                    self.ressoures += ((0.5) * roturier.ressources)
+                    roturier.ressources -= ((0.5) * roturier.ressources)
+                else :
+                    roturier.mourir()
+                
             else :
-                self.ressoures += ((0.25) * roturier.ressources)
-                roturier.ressources -= ((0.25) * roturier.ressources)
+                if routurier.ressources == 0 :
+                    self.argent += (roturier.argent - somme_art)
+                    roturier.argent -= somme_art
+                elif roturier.argent == 0 :
+                    self.ressoures += ((0.25) * roturier.ressources)
+                    roturier.ressources -= ((0.25) * roturier.ressources)
+                else :
+                    roturier.mourir()
     
-    
-    def distribution_dime():
-        
+    def distribution_dime(self):
         pass
 
 
@@ -76,8 +89,8 @@ class Seigneur(Noble):
         self.l_vassaux=l_vassaux
         
 
-    def collecte_impots(self)::
-        for vassal in l_vassaux :
+    def collecte_impots(self):
+        for vassal in self.l_vassaux :
             self.ressoures += ((0.1) * vassal.ressources) ## 10% des ressources du vassal
             vassal.ressources -= ((0.1) * vassal.ressources)
 
@@ -98,9 +111,13 @@ class Village(Case):
         self.type="village"
         self.chef=chef
         self.habitants=[]
-        
-            
-            
+
+class Eglise(Case):
+    def __init__(self,ecclesiastique,coords,terrain,nom))
+        super().__init__(coords,terrain)
+        self.ecclesisastique = ecclesisatique
+        self.nom = nom
+    
         
             
 
